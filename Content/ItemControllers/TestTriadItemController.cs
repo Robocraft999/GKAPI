@@ -9,7 +9,7 @@ public class TestTriadItemController : CustomItemController
 {
     public override void ClientHandleSkillUsed(EventClientCharacterSkillUsed eventData)
     {
-        if (eventData.SkillType == SkillType.Third)
+        if (IsItemInInventory && eventData.SkillType == SkillType.Third)
         {
             Plugin.Log.LogInfo("TestTriadItemController::HandleThirdSkillUsed");
         }

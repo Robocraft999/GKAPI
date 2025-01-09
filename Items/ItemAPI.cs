@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Gatekeeper.Infrastructure.Providers.InfoProviders;
 using Gatekeeper.Items;
@@ -7,17 +6,16 @@ using Gatekeeper.MainMenuScripts.Database.ItemsDatabaseController;
 using GKAPI.Lang;
 using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
-using UnityEngine;
 
 namespace GKAPI.Items;
 
 public class ItemAPI
 {
-    private List<GkItem> _items = [];
-    internal Dictionary<ItemID, Il2CppSystem.Type> itemControllerTypes = new();
-    internal readonly Dictionary<ItemID, CustomItemController> itemControllers = new();
+    private System.Collections.Generic.List<GkItem> _items = [];
+    internal System.Collections.Generic.Dictionary<ItemID, Il2CppSystem.Type> itemControllerTypes = new();
+    internal readonly System.Collections.Generic.Dictionary<ItemID, CustomItemController> itemControllers = new();
 
-    private static List<int> _existingIds = System.Enum.GetValues<ItemID>().Cast<int>().ToList();
+    private static System.Collections.Generic.List<int> _existingIds = System.Enum.GetValues<ItemID>().Cast<int>().ToList();
     private static int _nextItemId = 0;
     private static int NextItemId
     {
@@ -48,12 +46,12 @@ public class ItemAPI
     }
 
     //TODO add description and (stats)
-    public GkItem AddTriad(string name, List<ItemID> itemIds)
+    public GkItem AddTriad(string name, System.Collections.Generic.List<ItemID> itemIds)
     {
         return AddItem(new GkItem.Builder(name));
     }
 
-    public GkItem AddTriad(string name, List<ItemID> itemIds, Func<GkItem.Builder, GkItem.Builder> build)
+    public GkItem AddTriad(string name, System.Collections.Generic.List<ItemID> itemIds, Func<GkItem.Builder, GkItem.Builder> build)
     {
         var builder = build(new GkItem.Builder(name).AsTriad(itemIds));
         return AddItem(builder);
@@ -98,7 +96,7 @@ public class ItemAPI
         return itemControllers[id];
     }
 
-    public List<CustomItemController> GetItemControllers()
+    public System.Collections.Generic.List<CustomItemController> GetItemControllers()
     {
         return itemControllers.Values.ToList();
     }
@@ -120,5 +118,13 @@ public class ItemAPI
             Plugin.Log.LogInfo($"Registered Item {gkItem.Name} {gkItem.GetItemID} {gkItem.Info.itemType}");
             LangAPI.Instance.AddItemLang(gkItem);
         }
+        
+        Plugin.Log.LogInfo($"All Items");
+        foreach (var e in items)
+        {
+            ItemID id = e.key;
+            Plugin.Log.LogInfo($"   Item {(int)id} {e.value.id} {e.value.itemType} {e.value.itemNameKey} {e.value.itemLongDescKey}");
+        }
+        Plugin.Log.LogInfo($"Registered {_items.Count} Items");
     }
 }

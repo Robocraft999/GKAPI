@@ -103,7 +103,7 @@ public class ItemControllerEventListener
             component.manager = charManager;
             
             go.transform.SetParent(container.transform);
-            itemApi.itemControllers.Add(itemID, component);
+            itemApi.itemControllers[itemID] = component;
         }
     }
 }

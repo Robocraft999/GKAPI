@@ -1,14 +1,13 @@
 ﻿using System.Reflection;
 using Cpp2IL.Core.Extensions;
-using Gatekeeper.EnvironmentStuff.Obelisks;
 using Gatekeeper.General.Currency;
 using Gatekeeper.Infrastructure.Providers.InfoProviders;
 using Gatekeeper.Items;
 using Gatekeeper.MainMenuScripts.Database.ItemsDatabaseController;
 using Il2CppInterop.Runtime;
-using Il2CppSystem;
 using Il2CppSystem.Collections.Generic;
 using UnityEngine;
+using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
 
 namespace GKAPI.Items;
 
@@ -57,6 +56,21 @@ public class GkItem
         private ItemDropSource dropSource = ItemDropSource.All;
         private List<ParamModification> modifications = new();
         private List<ItemID> triadItems = new();
+
+        private static string FormatTerm(ItemType itemType, string id, string suffix)
+        {
+            var prefix = itemType switch
+            {
+                ItemType.Modifiers => $"ITEM.BASE.{id}.{suffix}",
+                ItemType.StructureChangers => $"ITEM.PURPLE.{id}.{suffix}",
+                ItemType.Amulets => $"ITEM.YELLOW.{id}.{suffix}",
+                ItemType.RunesOfCreation => $"ITEM.BLUE.{id}.{suffix}",
+                ItemType.CursedSignatures => $"ITEM.RED.{id}.{suffix}",
+                ItemType.Triad => $"TRIAD.{suffix}.{id}",
+                _ => throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null)
+            };
+            return prefix;
+        }
 
         public Builder(string name, string description = "Empty description", string statsDescription = "Empty stats description")
         {
@@ -177,9 +191,25 @@ public class GkItem
             info.itemCreateCost = scrapValue;
             //TODO custom cost
             info.itemUnlockCost = 1;
-            info.itemNameKey = $"ITEM.BASE.{id}.NAME";
-            info.itemLongDescKey = $"ITEM.BASE.{id}.DESC";
-            info.itemStatsKey = $"ITEM.BASE.{id}.STATS";
+            if (itemType == ItemType.Triad)
+            {
+                info.itemUnlockCost = 0;
+                info.itemObeliskCost = 0;
+                info.itemPedestalCost = 0;
+                info.itemTriadCost = 0;
+                info.itemTriadCostStep = 0;
+                info.itemCostStep = 500;
+                info.itemNameKey = FormatTerm(itemType, id, "NAME");
+                info.itemLongDescKey = "";
+                info.itemStatsKey = FormatTerm(itemType, id, "DESC");
+            }
+            else
+            {
+                info.itemNameKey = FormatTerm(itemType, id, "NAME");
+                info.itemLongDescKey = FormatTerm(itemType, id, "DESC");
+                info.itemStatsKey = FormatTerm(itemType, id, "STATS");
+            }
+            
             info.triadItems = new List<ItemDatabaseInfo>();
             info.name = $"{(int)itemType + 1}_{id}";
             return new GkItem()

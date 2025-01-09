@@ -10,6 +10,7 @@ using Gatekeeper.Items;
 using Gatekeeper.MainMenuScripts.Database.ItemsDatabaseController;
 using Gatekeeper.Infrastructure.Providers.InfoProviders;
 using Gatekeeper.MainMenuScripts.MainMenu.MainMenuPanel;
+using GKAPI.Achievements;
 using GKAPI.Content.ItemControllers;
 using GKAPI.Difficulties;
 using GKAPI.Items;
@@ -113,6 +114,9 @@ public class Plugin : BasePlugin
             Log.LogError("Content has to be added during Pre-Init!");
             return;
         }
+
+        var achievementAPI = AchievementsAPI.Instance;
+        var baseAchievement = achievementAPI.AddAchievement(new GkAchievement.Builder());
         
         var itemAPI = ItemAPI.Instance;
         var testItem = itemAPI.AddItem(new GkItem.Builder("Test Item", "Test item description", $"{ColorHelper.WrapInColor("{[Mod1_Lvl1]}% (+{[Mod1_Lvl2]}% per stack)", Colors.Red)} to critical damage.")
@@ -121,9 +125,11 @@ public class Plugin : BasePlugin
             .SetHidden(false)
             .AddModification(ItemParamModificationType.CritDamagePerc, 0.5f, 0.25f)
         );
-        itemAPI.AddItem("Bob");
-        var testTriad = itemAPI.AddTriad("TestTriad", [ItemID.HVC, ItemID.StringOfEli, testItem.GetItemID], builder => builder.SetUnlocked(true).SetHidden(false));
+        var bobItem = itemAPI.AddItem("Bob");
+        var testTriad = itemAPI.AddTriad("TestTriad", [ItemID.RuneOfRebound, ItemID.Triumph, testItem.GetItemID], builder => builder.SetUnlocked(true).SetHidden(false));
         itemAPI.AddItemController<TestTriadItemController>(testTriad.GetItemID);
+        
+        baseAchievement.AddItems([testItem.Info, bobItem.Info]);
 
         var diffAPI = DifficultiesAPI.Instance;
         diffAPI.AddDifficulty(new GkDifficulty.Builder()

@@ -10,13 +10,13 @@ public class AchievementsAPI
 {
     public static AchievementsAPI Instance { get; } = new();
     private List<GkAchievement> _achievements = new();
-    private static List<int> _existingIndicies = System.Enum.GetValues<ItemID>().Cast<int>().ToList();
-    private static int _nextAchievementIndex = 0;
+    private static List<ushort> _existingIndicies = System.Enum.GetValues<AchievementID>().Cast<ushort>().ToList();
+    private static int _nextAchievementIndex = 5;
     private static int NextAchievementIndex
     {
         get 
         {
-            while (_existingIndicies.Contains(_nextAchievementIndex)) _nextAchievementIndex++;
+            while (_existingIndicies.Contains((ushort)_nextAchievementIndex)) _nextAchievementIndex++;
             return _nextAchievementIndex++;
         }
     }

@@ -19,7 +19,7 @@ namespace GKAPI.Difficulties;
 public class DifficultiesAPI
 {
     private int _nextId = System.Enum.GetValues<GameDifficulty>().Length;
-    private Dictionary<GameDifficulty, GkDifficulty> _gkDifficulties = [];
+    private readonly Dictionary<GameDifficulty, GkDifficulty> _gkDifficulties = [];
     private Sprite _backgroundSprite;
     private Sprite _diamondSprite;
     

@@ -4,25 +4,9 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using Gatekeeper.EnvironmentStuff.Obelisks;
-using Gatekeeper.General.GameEvents;
-using Gatekeeper.Items;
-using Gatekeeper.MainMenuScripts.Database.ItemsDatabaseController;
-using Gatekeeper.Infrastructure.Providers.InfoProviders;
-using Gatekeeper.MainMenuScripts.MainMenu.MainMenuPanel;
-using GKAPI.Achievements;
-using GKAPI.Content.ItemControllers;
-using GKAPI.Difficulties;
-using GKAPI.Items;
-using GKAPI.Lang;
 using HarmonyLib;
 using I2.Loc;
-using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppMono;
-using Il2CppSystem.Collections.Generic;
-using Pathfinding.Collections;
-using UnityEngine;
 
 namespace GKAPI;
 
@@ -57,31 +41,6 @@ public class Plugin : BasePlugin
         {
             Log.LogMessage(" ");
             Log.LogMessage("Inserting Harmony Hooks...");
-
-            //var harmony = new Harmony("robocraft999.gkapi.il2cpp");
-            /*var originalUpdate = AccessTools.Method(typeof(UnityEngine.UI.CanvasScaler), "Update");
-            Log.LogMessage("   Original Method: " + originalUpdate.DeclaringType.Name + "." + originalUpdate.Name);
-            var postUpdate = AccessTools.Method(typeof(Test2.Bootstrapper), "Update");
-            Log.LogMessage("   Postfix Method: " + postUpdate.DeclaringType.Name + "." + postUpdate.Name);
-            harmony.Patch(originalUpdate, postfix: new HarmonyMethod(postUpdate));*/
-            
-            /*var originalUpdate = AccessTools.Method(typeof(Gatekeeper.MainMenuScripts.MainMenu.MainMenuPanel.MainMenuController), "Awake");
-            Log.LogMessage("   Original Method: " + originalUpdate.DeclaringType.Name + "." + originalUpdate.Name);
-            var postUpdate = AccessTools.Method(typeof(Plugin), "OnAwake");
-            Log.LogMessage("   Postfix Method: " + postUpdate.DeclaringType.Name + "." + postUpdate.Name);
-            harmony.Patch(originalUpdate, postfix: new HarmonyMethod(postUpdate));*/
-            
-            /*var originalStart = AccessTools.Method(typeof(Gatekeeper.MainMenuScripts.MainMenu.CharacterSelectPanel.PanelDifficulty), "Awake");
-            Log.LogMessage("   Original Method: " + originalStart.DeclaringType.Name + "." + originalStart.Name);
-            var postStart = AccessTools.Method(typeof(UI_Patch), "AddUIPatch");
-            Log.LogMessage("   Postfix Method: " + postStart.DeclaringType.Name + "." + postStart.Name);
-            harmony.Patch(originalStart, postfix: new HarmonyMethod(postStart));*/
-            
-            /*var originalOnToggle = AccessTools.Method(typeof(Gatekeeper.MainMenuScripts.MainMenu.CharacterSelectPanel.PanelDifficulty), "UpdateDifficultyTextPercentage");
-            Log.LogMessage("   Original Method: " + originalOnToggle.DeclaringType.Name + "." + originalOnToggle.Name);
-            var postOnToggle = AccessTools.Method(typeof(UI_Patch), "PatchUpdateDifficultyTextPercentage");
-            Log.LogMessage("   Prefix Method: " + postOnToggle.DeclaringType.Name + "." + postOnToggle.Name);
-            harmony.Patch(originalOnToggle, prefix: new HarmonyMethod(postOnToggle));*/
             
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), "com.robocraft999.gkapi.il2cpp");
 
@@ -92,62 +51,10 @@ public class Plugin : BasePlugin
         {
             Log.LogError($"FAILED to Apply Hooks's! {e.Message}");
         }
-
-        AddContent();
-        EventHandler.OnLoad();
-        
-        /*foreach (var pair in itemsInfoProvider.ItemInfos)
-        {
-            var info = pair.Value;
-            Log.LogInfo(info.id);
-            //info.itemCost = 10;
-        }*/
         
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
-    }
-
-    private void AddContent()
-    {
-        if (EventHandler.State != EventHandler.LoadingState.PreInit)
-        {
-            Log.LogError("Content has to be added during Pre-Init!");
-            return;
-        }
-
-        var achievementAPI = AchievementsAPI.Instance;
-        var baseAchievement = achievementAPI.AddAchievement(new GkAchievement.Builder());
-        
-        var itemAPI = ItemAPI.Instance;
-        var testItem = itemAPI.AddItem(new GkItem.Builder("Test Item", "Test item description", $"{ColorHelper.WrapInColor("{[Mod1_Lvl1]}% (+{[Mod1_Lvl2]}% per stack)", Colors.Red)} to critical damage.")
-            .WithId("TEST")
-            .SetUnlocked(true)
-            .SetHidden(false)
-            .AddModification(ItemParamModificationType.CritDamagePerc, 0.5f, 0.25f)
-        );
-        var bobItem = itemAPI.AddItem("Bob");
-        var testTriad = itemAPI.AddTriad("TestTriad", [ItemID.RuneOfRebound, ItemID.Triumph, testItem.GetItemID], builder => builder.SetUnlocked(true).SetHidden(false));
-        itemAPI.AddItemController<TestTriadItemController>(testTriad.GetItemID);
-        
-        baseAchievement.AddItems([testItem.Info, bobItem.Info]);
-
-        var diffAPI = DifficultiesAPI.Instance;
-        diffAPI.AddDifficulty(new GkDifficulty.Builder()
-            .WithName("Guardian")
-            .WithPercentageName("300%")
-            .WithDifficultyMultiplier(0.6f)
-            .WithPrismMultiplier(2f)
-            .WithEventsMinLevel(0)
-            .WithColors(new Color(0.1f, 0.1f, 0.5f), new Color(0.1f, 0.3f, 0.8f))
-        );
-        diffAPI.AddDifficulty(new GkDifficulty.Builder()
-            .WithName("Wtf is this")
-            .WithPercentageName("1000%")
-            .WithDifficultyMultiplier(2f)
-            .WithPrismMultiplier(4f)
-            .WithEventsMinLevel(0)
-            .WithColors(new Color(0.4f, 0.1f, 0.8f), new Color(0.4f, 0.3f, 0.8f))
-        );
+        IL2CPPChainloader.Instance.Finished += PluginManager.LoadPlugins;
     }
 
     private static bool lateLoadCompleted;

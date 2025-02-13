@@ -55,22 +55,6 @@ public class EventHandler
         StartGame?.Invoke();
     }*/
 
-    [HarmonyPatch(typeof(ObeliskShopPopupController), nameof(ObeliskShopPopupController.Init))]
-    //[HarmonyPostfix]
-    private static void OnShopControllerInit(ObeliskShopPopupController __instance, ObeliskShop obeliskShop)
-    {
-        Plugin.Log.LogInfo($"Obelisk Shop Controller Init");
-        foreach (var item in obeliskShop.ItemInfos)
-        {
-            Plugin.Log.LogInfo($"Obelisk Shop Item Info: {item.name} {item.id} {item}");
-        }
-        foreach (var item in __instance.InitedObeliskItems)
-        {
-            Plugin.Log.LogInfo($"Initted Obelisk Shop Item Info: {item.name} {item.OnPickItem} {item}");
-        }
-        Plugin.Log.LogInfo($"Obelisk Shop Controller init {obeliskShop._itemsInited}");
-    }
-
     [HarmonyPatch(typeof(TriadPanel), nameof(TriadPanel.Setup))]
     //[HarmonyPrefix]
     private static void OnSetupTriadPanel(TriadPanel __instance, ItemDatabaseInfo itemInfo, ItemLocalizer itemLocalizer)
@@ -246,21 +230,6 @@ public class EventHandler
         //Plugin.Log.LogInfo($"Triad Panel Setup '{__instance._triadInfo}'");
         //Plugin.Log.LogInfo($"   '{DatabaseInfoProvider.Items.ItemRelatedDatas.get_Item(itemInfo.ItemID).TriadInfo.id}'");
         //Plugin.Log.LogInfo($"Triad Panel Setup {__instance} {itemInfo.id} {itemLocalizer}");
-    }
-    
-    [HarmonyPatch(typeof(TriadPanel), nameof(TriadPanel.Setup))]
-    //[HarmonyPostfix]
-    private static void OnSetupTriadPanelPost(TriadPanel __instance, ItemDatabaseInfo itemInfo, ItemLocalizer itemLocalizer)
-    {
-        Plugin.Log.LogInfo($"Triad Panel Setup Post {(__instance != null ? __instance._triadInfo.id : "null")} {__instance._itemInfo.id}");
-    }
-    
-    [HarmonyPatch(typeof(TriadPanel), nameof(TriadPanel.Init))]
-    //[HarmonyPrefix]
-    private static bool OnInitTriadPanel(TriadPanel __instance, ItemLocalizer itemLocalizer)
-    {
-        Plugin.Log.LogInfo($"Triad Panel Init {__instance} {itemLocalizer}");
-        return true;
     }
 
     public enum LoadingState

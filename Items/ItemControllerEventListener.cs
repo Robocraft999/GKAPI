@@ -4,7 +4,6 @@ using Gatekeeper.Enemy.Base;
 using Gatekeeper.General.Events.Characters;
 using Gatekeeper.General.Events.Enemies;
 using Gatekeeper.General.Events.Interactable;
-using Gatekeeper.General.Events.Items;
 using Gatekeeper.Utility;
 using HarmonyLib;
 using UnityEngine;

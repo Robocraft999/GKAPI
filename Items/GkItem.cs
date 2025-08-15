@@ -13,22 +13,46 @@ namespace GKAPI.Items;
 
 public class GkItem
 {
-    public string Description { get; private set; }
-    public string Name { get; private set; }
-    public string StatsDescription { get; private set; }
+    public string Description { get; private init; }
+    public string Name { get; private init; }
+    public string StatsDescription { get; private init; }
     
     public ItemID GetItemID => Info.ItemId;
-    public ItemDatabaseInfo Info { get; private set; }
-    private List<ItemID> triadItemIds = new();
+    public ItemDatabaseInfo Info { get; private init; }
+    private List<ItemID> _triadItemIds = new();
+
+    private const int ModifierCost = 70;
+    private const int ModifierPedestalCost = 200;
+    private const int ModifierScrapValue = 10;
+    
+    private const int StructureChangersCost = 140;
+    private const int StructureChangersPedestalCost = 400;
+    private const int StructureChangersScrapValue = 30;
+    
+    private const int AmuletCost = 100;
+    private const int AmuletPedestalCost = 300;
+    private const int AmuletScrapValue = 20;
+    
+    private const int CursedSignaturesCost = 0;
+    private const int CursedSignaturesPedestalCost = 1;
+    private const int CursedSignaturesScrapValue = 5;
+    
+    private const int RunesOfCreationCost = 210;
+    private const int RunesOfCreationPedestalCost = 600;
+    private const int RunesOfCreationScrapValue = 40;
+
+    private const int TriadCost = 500;
+    private const int TriadPedestalCost = 0;
+    private const int TriadScrapValue = 0;
 
     public void SetupTriad()
     {
-        if (triadItemIds.Count != 3)
+        if (_triadItemIds.Count != 3)
         {
-            Plugin.Log.LogError($"Triad has incorrect number of items: {this.triadItemIds.Count}");
+            Plugin.Log.LogError($"Triad has incorrect number of items: {this._triadItemIds.Count}");
             return;
         }
-        foreach (var itemID in triadItemIds)
+        foreach (var itemID in _triadItemIds)
         {
             var item = ItemAPI.Instance.GetItemById(itemID);
             if (item != null)
@@ -44,18 +68,20 @@ public class GkItem
 
     public class Builder
     {
-        private string id;
-        private string name;
-        private string description;
-        private string statsDescription;
-        private ItemType itemType = ItemType.Modifiers;
-        private bool unlocked = false;
-        private bool hidden = true;
-        private int itemCost = 70;
-        private int maxCount = -1;
-        private ItemDropSource dropSource = ItemDropSource.All;
-        private List<ParamModification> modifications = new();
-        private List<ItemID> triadItems = new();
+        private string _id;
+        private string _name;
+        private string _description;
+        private string _statsDescription;
+        private ItemType _itemType = ItemType.Modifiers;
+        private bool _unlocked = false;
+        private bool _hidden = true;
+        private int _itemCost = ModifierCost;
+        private int _itemPedestalCost = ModifierPedestalCost;
+        private int _scrapValue = ModifierScrapValue;
+        private int _maxCount = -1;
+        private ItemDropSource _dropSource = ItemDropSource.All;
+        private List<ParamModification> _modifications = new();
+        private List<ItemID> _triadItems = new();
 
         private static string FormatTerm(ItemType itemType, string id, string suffix)
         {
@@ -74,60 +100,97 @@ public class GkItem
 
         public Builder(string name, string description = "Empty description", string statsDescription = "Empty stats description")
         {
-            this.id = name.ToUpper();
-            this.name = name;
-            this.description = description;
-            this.statsDescription = statsDescription;
+            _id = name.ToUpper();
+            _name = name;
+            _description = description;
+            _statsDescription = statsDescription;
         }
 
+        public Builder AsModifier()
+        {
+            return WithItemType(ItemType.Modifiers).WithItemCost(ModifierCost).WithItemPedestalCost(ModifierPedestalCost).WithScrapValue(ModifierScrapValue);
+        }
+        
+        public Builder AsStructureChanger()
+        {
+            return WithItemType(ItemType.StructureChangers).WithItemCost(StructureChangersCost).WithItemPedestalCost(StructureChangersPedestalCost).WithScrapValue(StructureChangersScrapValue);
+        }
+        
+        public Builder AsAmulet()
+        {
+            return WithItemType(ItemType.Amulets).WithItemCost(AmuletCost).WithItemPedestalCost(AmuletPedestalCost).WithScrapValue(AmuletScrapValue);
+        }
+        
+        public Builder AsCursedSignature()
+        {
+            return WithItemType(ItemType.CursedSignatures).WithItemCost(CursedSignaturesCost).WithItemPedestalCost(CursedSignaturesPedestalCost).WithScrapValue(CursedSignaturesScrapValue);
+        }
+        
+        public Builder AsRuneOfCreation()
+        {
+            return WithItemType(ItemType.RunesOfCreation).WithItemCost(RunesOfCreationCost).WithItemPedestalCost(RunesOfCreationPedestalCost).WithScrapValue(RunesOfCreationScrapValue);
+        }
+        
         public Builder AsTriad(System.Collections.Generic.List<ItemID> itemIds)
         {
             foreach (var itemID in itemIds)
             {
-                this.triadItems.Add(itemID);
+                _triadItems.Add(itemID);
             }
-            return this.WithItemType(ItemType.Triad).WithDropSource((ItemDropSource)0-255).WithMaxCount(1).WithItemCost(500);
+            return WithItemType(ItemType.Triad).WithDropSource(ItemDropSource.None).WithMaxCount(1).WithItemCost(TriadCost).WithItemPedestalCost(TriadPedestalCost).WithScrapValue(TriadScrapValue);
         }
 
         public Builder WithId(string id)
         {
-            this.id = id;
+            _id = id;
             return this;
         }
 
         public Builder WithItemType(ItemType itemType)
         {
-            this.itemType = itemType;
+            _itemType = itemType;
             return this;
         }
 
         public Builder SetUnlocked(bool unlocked)
         {
-            this.unlocked = unlocked;
+            _unlocked = unlocked;
             return this;
         }
 
         public Builder SetHidden(bool hidden)
         {
-            this.hidden = hidden;
+            _hidden = hidden;
             return this;
         }
 
         public Builder WithItemCost(int cost)
         {
-            this.itemCost = cost;
+            _itemCost = cost;
+            return this;
+        }
+
+        public Builder WithItemPedestalCost(int cost)
+        {
+            _itemPedestalCost = cost;
             return this;
         }
 
         public Builder WithMaxCount(int maxCount)
         {
-            this.maxCount = maxCount;
+            _maxCount = maxCount;
+            return this;
+        }
+
+        public Builder WithScrapValue(int scrapValue)
+        {
+            _scrapValue = scrapValue;
             return this;
         }
 
         public Builder WithDropSource(ItemDropSource dropSource)
         {
-            this.dropSource = dropSource;
+            _dropSource = dropSource;
             return this;
         }
 
@@ -139,7 +202,7 @@ public class GkItem
                 firstLevelModificationValue = baseValue,
                 otherLevelModificationValue = levelValue
             };
-            modifications.Add(modification);
+            _modifications.Add(modification);
             return this;
         }
 
@@ -155,6 +218,7 @@ public class GkItem
             //TODO add projectiles
             info.ProjectileInfos = new List<ItemProjectileInfo>();
 
+            //TODO custom icon
             Sprite sprite;
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GKAPI.Assets.testassetbundle"))
             {
@@ -166,65 +230,51 @@ public class GkItem
             Plugin.Log.LogMessage($"Is sprite null? {sprite == null}");
             
             info.DatabaseIcon = sprite ?? vanillaItems.get_Item(ItemID.Cannonade).DatabaseIcon;
-            info.Id = id;
-            info.itemType = itemType;
-            info.itemMaxCount = maxCount;
-            info.unlocked = unlocked;
-            info.wasSeen = !hidden;
-            info.modificationParams = modifications;
-            info.defaultDropSource = dropSource;
+            info.Id = _id;
+            info.itemType = _itemType;
+            info.itemMaxCount = _maxCount;
+            info.unlocked = _unlocked;
+            info.wasSeen = !_hidden;
+            info.modificationParams = _modifications;
+            info.defaultDropSource = _dropSource;
             //TODO add separate function
-            info.arenaDropSource = dropSource;
+            info.arenaDropSource = _dropSource;
             info.currency = CurrencyType.Prism;
-            info.itemCost = itemCost;
-            info.itemObeliskCost = itemCost;
-            info.itemPedestalCost = itemCost;
-            info.itemTriadCost = itemCost;
-            info.itemTriadCostStep = 500;
-            info.itemCostStep = 5;
-            var scrapValue = itemType switch
-            {
-                ItemType.Modifiers => 10,
-                ItemType.StructureChangers => 30,
-                ItemType.RunesOfCreation => 40,
-                ItemType.Amulets => 20,
-                ItemType.CursedSignatures => 5,
-                ItemType.Triad => 0,
-                _ => 0
-            };
-            info.itemSellingCost = scrapValue;
-            info.itemCreateCost = scrapValue;
+            info.itemCost = _itemCost;
+            info.itemCostStep = 0;
+            info.itemObeliskCost = 0;
+            info.itemPedestalCost = _itemPedestalCost;
+            info.itemTriadCost = 0;
+            info.itemTriadCostStep = 0;
+            info.itemSellingCost = _scrapValue;
+            info.itemCreateCost = _scrapValue;
             //TODO custom cost
             info.itemUnlockCost = 1;
-            info.itemExcludeCost = 5;
-            if (itemType == ItemType.Triad)
+            info.itemExcludeCost = 3;
+            if (_itemType == ItemType.Triad)
             {
                 info.itemUnlockCost = 0;
-                info.itemObeliskCost = 0;
-                info.itemPedestalCost = 0;
-                info.itemTriadCost = 0;
-                info.itemTriadCostStep = 0;
                 info.itemCostStep = 500;
-                info.itemNameKey = FormatTerm(itemType, id, "NAME");
+                info.itemNameKey = FormatTerm(_itemType, _id, "NAME");
                 info.itemLongDescKey = "";
-                info.itemStatsKey = FormatTerm(itemType, id, "DESC");
+                info.itemStatsKey = FormatTerm(_itemType, _id, "DESC");
             }
             else
             {
-                info.itemNameKey = FormatTerm(itemType, id, "NAME");
-                info.itemLongDescKey = FormatTerm(itemType, id, "DESC");
-                info.itemStatsKey = FormatTerm(itemType, id, "STATS");
+                info.itemNameKey = FormatTerm(_itemType, _id, "NAME");
+                info.itemLongDescKey = FormatTerm(_itemType, _id, "DESC");
+                info.itemStatsKey = FormatTerm(_itemType, _id, "STATS");
             }
             
             info.triadItems = new List<ItemDatabaseInfo>();
-            info.name = $"{(int)itemType + 1}_{id}";
+            info.name = $"{(int)_itemType + 1}_{_id}";
             return new GkItem()
             {
                 Info = info,
-                Name = name,
-                Description = description,
-                StatsDescription = statsDescription,
-                triadItemIds = triadItems,
+                Name = _name,
+                Description = _description,
+                StatsDescription = _statsDescription,
+                _triadItemIds = _triadItems,
             };
         }
     }

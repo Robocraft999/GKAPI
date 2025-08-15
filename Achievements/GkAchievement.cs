@@ -10,21 +10,21 @@ namespace GKAPI.Achievements;
 public class GkAchievement
 {
     public StoreAchievementInfo Info { get; private set; }
-    private List<ItemDatabaseInfo> items = [];
+    private readonly List<ItemDatabaseInfo> _items = [];
 
-    public void writeItems()
+    public void WriteItems()
     {
-        Info.Items = new Il2CppReferenceArray<ItemDatabaseInfo>(items.ToArray());
+        Info.Items = new Il2CppReferenceArray<ItemDatabaseInfo>(_items.ToArray());
     }
 
     public void AddItem(ItemDatabaseInfo item)
     {
-        items.Add(item);
+        _items.Add(item);
     }
 
     public void AddItems(ItemDatabaseInfo[] items)
     {
-        this.items.AddRange(items);
+        this._items.AddRange(items);
     }
     
     public class Builder

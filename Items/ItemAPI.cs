@@ -11,13 +11,13 @@ namespace GKAPI.Items;
 
 public class ItemAPI
 {
-    private System.Collections.Generic.List<GkItem> _items = [];
+    private readonly System.Collections.Generic.List<GkItem> _items = [];
     internal System.Collections.Generic.Dictionary<ItemID, Il2CppSystem.Type> itemControllerTypes = new();
     internal readonly System.Collections.Generic.Dictionary<ItemID, CustomItemController> itemControllers = new();
 
-    private static System.Collections.Generic.List<int> _existingIds = System.Enum.GetValues<ItemID>().Cast<int>().ToList();
-    private static int _nextItemId = 0;
-    private static int NextItemId
+    private readonly System.Collections.Generic.List<int> _existingIds = System.Enum.GetValues<ItemID>().Cast<int>().ToList();
+    private int _nextItemId = 0;
+    private int NextItemId
     {
         get 
         {
@@ -43,12 +43,6 @@ public class ItemAPI
     {
         var builder = build(new GkItem.Builder(name));
         return AddItem(builder);
-    }
-
-    //TODO add description and (stats)
-    public GkItem AddTriad(string name, System.Collections.Generic.List<ItemID> itemIds)
-    {
-        return AddItem(new GkItem.Builder(name));
     }
 
     public GkItem AddTriad(string name, System.Collections.Generic.List<ItemID> itemIds, Func<GkItem.Builder, GkItem.Builder> build)
@@ -82,13 +76,9 @@ public class ItemAPI
     public ItemDatabaseInfo GetItemById(ItemID id)
     {
         var vanilla = DatabaseInfoProvider.Items.ItemInfos.get_Item(id);
-        if (vanilla == null)
-        {
-            var item = _items.FirstOrDefault(x => x.GetItemID == id);
-            if (item != null)
-                return item.Info;
-        }
-        return vanilla;
+        if (vanilla != null) return vanilla;
+        var item = _items.FirstOrDefault(x => x.GetItemID == id);
+        return item?.Info;
     }
 
     public CustomItemController GetItemControllerForID(ItemID id)

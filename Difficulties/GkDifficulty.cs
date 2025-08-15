@@ -1,6 +1,4 @@
-﻿
-
-using Gatekeeper.Elites;
+﻿using Gatekeeper.Elites;
 using Gatekeeper.General;
 using RNGNeeds;
 using UnityEngine;
@@ -210,11 +208,11 @@ public class GkDifficulty
 
     public class Arena
     {
-        public float EnemyExpRoundPow {get; internal set;}
-        public float EnemyExpPointsPerRound {get; internal set;}
-        public float EnemyPowerDifficultyCoefficient {get; internal set;}
-        public float FixedSirenDifficultyCoefficient {get; internal set;}
-        public float SirenSpawnDifficultyModifier {get; internal set;}
-        public float ArenaExpPointsPerTime {get; internal set;}
+        public float EnemyExpRoundPow {get; internal init;}
+        public float EnemyExpPointsPerRound {get; internal init;}
+        public float EnemyPowerDifficultyCoefficient {get; internal init;}
+        public float FixedSirenDifficultyCoefficient {get; internal init;}
+        public float SirenSpawnDifficultyModifier {get; internal init;}
+        public float ArenaExpPointsPerTime {get; internal init;}
     }
 }

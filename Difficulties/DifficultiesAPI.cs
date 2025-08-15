@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Doozy.Runtime.Reactor.Targets;
 using Doozy.Runtime.UIManager.Components;
@@ -25,15 +24,12 @@ public class DifficultiesAPI
 {
     private int _nextId = (int)GameDifficulty.Insane * 2;
     private readonly Dictionary<GameDifficulty, GkDifficulty> _gkDifficulties = [];
-    private Sprite _backgroundSprite;
-    private Sprite _diamondSprite;
     
     public static DifficultiesAPI Instance { get; } = new();
 
     private DifficultiesAPI()
     {
         EventHandler.Init += RegisterDifficulties;
-        EventHandler.LateInit += CollectGameAssets;
     }
 
     public (GameDifficulty, GkDifficulty) AddDifficulty(GkDifficulty.Builder builder)
@@ -88,26 +84,6 @@ public class DifficultiesAPI
         return probs;
     }
 
-    private void CollectGameAssets()
-    {
-        if (this._backgroundSprite != null)
-            return;
-        Plugin.Log.LogInfo("Collecting game assets");
-        foreach (var sprite in Resources.FindObjectsOfTypeAll<Sprite>())
-        {
-            switch (sprite.name)
-            {
-                case "Checkmark_2":
-                    this._diamondSprite = sprite;
-                    break;
-                case "button_line2_polygon5_13":
-                    this._backgroundSprite = sprite;
-                    break;
-            }
-        }
-        Plugin.Log.LogInfo($"Collected game assets, background: {_backgroundSprite == null}, diamond: {_diamondSprite == null}");
-    }
-
     [HarmonyPatch(typeof(PanelDifficulty), nameof(PanelDifficulty.Awake))]
     [HarmonyPostfix]
     private static void ConstructDifficultyPanel(ref PanelDifficulty __instance)
@@ -149,80 +125,6 @@ public class DifficultiesAPI
             if (!diffInfo.CheckmarkColors.ContainsKey(gameDifficulty))
                 diffInfo.CheckmarkColors.Add(gameDifficulty, difficulty.CheckmarkColor);
         }
-
-        return;
-
-        /*
-        foreach (var (gameDifficulty, difficulty) in Instance._gkDifficulties)
-        {
-            var diffObject = new GameObject($"Toggle - {difficulty.DifficultyName}");
-            var diffToggleDifficulty = diffObject.AddComponent<ToggleDifficulty>();
-            diffToggleDifficulty.GameDifficulty = gameDifficulty;
-            var diffUiToggle = diffObject.GetComponent<UIToggle>();
-            //UnityAction<ToggleValueChangedEvent> onValueChanged = (e) => animator.OnValueChanged(e);
-            //uiToggle.onToggleValueChangedCallback = onValueChanged;
-            diffObject.AddComponent<CanvasGroup>();
-            var diffSelectableAnimator = diffObject.AddComponent<UISelectableUIAnimator>();
-            diffSelectableAnimator.Controller = diffUiToggle;
-            var diffSelectableSender = diffObject.AddComponent<SelectableSender>();
-            diffSelectableSender.selectable = diffUiToggle;
-            
-            var background = new GameObject("Background");
-            background.transform.SetParent(diffObject.transform);
-            var backgroundColorAnimator = background.AddComponent<UIToggleColorAnimator>();
-            backgroundColorAnimator.Controller = diffUiToggle;
-            
-            var backgroundColor = new Color(0.1f, 0.1f, 0.5f);
-            Plugin.Log.LogInfo($"t1");
-            var backgroundColorAnimation = new ColorAnimation();
-            backgroundColorAnimation.startColor = backgroundColor;
-            backgroundColorAnimation.Animation.Enabled = true;
-            backgroundColorAnimation.RegisterCallbacks();
-            var backgroundColorTarget = background.AddComponent<ImageColorTarget>();
-            Plugin.Log.LogInfo($"t2");
-            backgroundColorTarget.SetColor(backgroundColor);
-            backgroundColorAnimation.colorTarget = backgroundColorTarget;
-			
-            backgroundColorAnimator.OnAnimation = backgroundColorAnimation;
-            backgroundColorAnimator.OffAnimation = backgroundColorAnimation;
-            backgroundColorAnimator.ColorTarget = backgroundColorTarget;
-            Plugin.Log.LogInfo($"t3");
-            var backgroundUIAnimator = background.AddComponent<UIToggleUIAnimator>();
-            backgroundUIAnimator.Controller = diffUiToggle;
-            Plugin.Log.LogInfo($"t4");
-            //background.AddComponent<CanvasGroup>();
-            var backgroundImage = background.GetComponent<Image>();
-            backgroundImage.preserveAspect = true;
-            backgroundImage.sprite = Instance._backgroundSprite;
-            backgroundColorTarget.Target = backgroundImage;
-            
-            Plugin.Log.LogInfo($"Sprite is null? {backgroundImage.sprite == null}");
-            
-            var checkmark = new GameObject("Checkmark");
-            var checkmarkColorAnimator = checkmark.AddComponent<UIToggleColorAnimator>();
-            checkmarkColorAnimator.Controller = diffUiToggle;
-            
-            var checkmarkColor = new Color(0.1f, 0.1f, 0.5f);
-            var checkmarkColorAnimation = new ColorAnimation
-            {
-                startColor = checkmarkColor,
-            };
-            var checkmarkColorTarget = checkmark.AddComponent<ImageColorTarget>();
-            checkmarkColorTarget.color = checkmarkColor;
-            
-            checkmarkColorAnimator.ColorTarget = checkmarkColorTarget;
-            checkmarkColorAnimator.OnAnimation = checkmarkColorAnimation;
-            checkmarkColorAnimator.OffAnimation = checkmarkColorAnimation;
-            checkmark.transform.SetParent(background.transform);
-            var checkmarkImage = checkmark.GetComponent<Image>();
-            checkmarkImage.sprite = Instance._diamondSprite;
-            checkmarkColorTarget.Target = checkmarkImage;
-            
-            var controllerTransform = __instance.gameObject.transform.GetChild(1);
-            diffObject.transform.SetParent(controllerTransform);
-            __instance._toggles.Add(diffToggleDifficulty);
-            __instance.toggleGroup.AddToggle(diffUiToggle);
-        }*/
     }
     
     private static GameDifficulty _cachedDifficulty;

@@ -38,7 +38,7 @@ public class AchievementsAPI
         var achievements = DatabaseInfoProvider.StoreAchievements.StoreAchievementInfos;
         foreach (var achievement in _achievements)
         {
-            achievement.writeItems();
+            achievement.WriteItems();
             achievements.Add(achievement.Info);
         }
         Plugin.Log.LogInfo($"Registered {_achievements.Count} Achievements");

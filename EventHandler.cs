@@ -15,6 +15,8 @@ using Gatekeeper.Items;
 using Gatekeeper.MainMenuScripts.Database.ItemsDatabaseController;
 using Gatekeeper.MainMenuScripts.MainMenu.MainMenuPanel;
 using HarmonyLib;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 namespace GKAPI;
 
@@ -25,6 +27,7 @@ public class EventHandler
     public static Action Init;
     public static Action LateInit;
     public static Action StartGame;
+    public static Action<string> LoadScene;
 
     public static void OnLoad()
     {
@@ -32,6 +35,7 @@ public class EventHandler
         {
             State = LoadingState.Init;
             Init?.Invoke();
+            SceneManager.sceneLoaded += (UnityAction<Scene, LoadSceneMode>) OnSceneLoad;
         }
         else
             Plugin.Log.LogError("Invalid loading state");
@@ -48,6 +52,11 @@ public class EventHandler
         LateInit?.Invoke();
     }
 
+    private static void OnSceneLoad(Scene scene, LoadSceneMode mode)
+    {
+        LoadScene?.Invoke(scene.name);
+    }
+
     /*[HarmonyPatch(typeof(GameplayManager), nameof(GameplayManager.ClientInit))]
     [HarmonyPostfix]
     private static void OnGameStart()
@@ -55,9 +64,9 @@ public class EventHandler
         StartGame?.Invoke();
     }*/
 
-    [HarmonyPatch(typeof(TriadPanel), nameof(TriadPanel.Setup))]
+    //[HarmonyPatch(typeof(TriadPanel), nameof(TriadPanel.Setup))]
     //[HarmonyPrefix]
-    private static void OnSetupTriadPanel(TriadPanel __instance, ItemDatabaseInfo itemInfo, ItemLocalizer itemLocalizer)
+    /*private static void OnSetupTriadPanel(TriadPanel __instance, ItemDatabaseInfo itemInfo, ItemLocalizer itemLocalizer)
     {
         Plugin.Log.LogInfo($"Triad Panel Setup Prefix Pre: '{__instance == null}'");
         var this_inited = __instance._inited;
@@ -92,7 +101,7 @@ public class EventHandler
         var _itemsInfoProvider = this_itemsInfoProvider;
         var _itemInfo = this_itemInfo;
         var ItemRelatedDatas = _itemsInfoProvider.ItemRelatedDatas;
-        var item = ItemRelatedDatas.get_Item(_itemInfo.ItemID);
+        var item = ItemRelatedDatas.get_Item(_itemInfo.ItemId);
         var this_triadInfo = item.TriadInfo;
         var _triadInfo = this_triadInfo;
         Plugin.Log.LogInfo($"Triad Panel Setup Prefix triadInfo null? '{_triadInfo == null}'");
@@ -119,7 +128,7 @@ public class EventHandler
             }
             var _itemsInfoProvider2 = this_itemsInfoProvider;
             var ItemRelatedDatas2 = _itemsInfoProvider2.ItemRelatedDatas;
-            var item3 = ItemRelatedDatas2.get_Item(_itemInfo.ItemID);
+            var item3 = ItemRelatedDatas2.get_Item(_itemInfo.ItemId);
             
             var itemImagesControllers3 = this_itemImagesControllers;
             var triadImageController = itemImagesControllers3[local21];
@@ -138,13 +147,13 @@ public class EventHandler
                 var itemImagesControllers5 = this_itemImagesControllers;
                 var triadImageController3 = itemImagesControllers5[local21];
                 var triadImage = triadImageController3.triadImage;
-                var itemIcon = item2.itemIcon;
+                var itemIcon = item2.DatabaseIcon;
                 triadImage.sprite = itemIcon;
-                var sstring = item2.id;
+                var sstring = item2.Id;
                 var unlockedStatus = SaveLoadManager.GetUnlockedStatus(sstring);
                 if (unlockedStatus)
                 {
-                    var ItemID = item2.ItemID;
+                    var ItemID = item2.ItemId;
                     var local53 = PlayableCharactersHolder.MyCharacter.ItemManager;
                     var isItemInInventory = local53.IsItemInInventory(ItemID);
                     if (isItemInInventory)
@@ -230,7 +239,7 @@ public class EventHandler
         //Plugin.Log.LogInfo($"Triad Panel Setup '{__instance._triadInfo}'");
         //Plugin.Log.LogInfo($"   '{DatabaseInfoProvider.Items.ItemRelatedDatas.get_Item(itemInfo.ItemID).TriadInfo.id}'");
         //Plugin.Log.LogInfo($"Triad Panel Setup {__instance} {itemInfo.id} {itemLocalizer}");
-    }
+    }*/
 
     public enum LoadingState
     {

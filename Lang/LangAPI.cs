@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GKAPI.Difficulties;
 using GKAPI.Items;
 using I2.Loc;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -32,6 +33,7 @@ public class LangAPI
 
     public void CreateAndAddTerm(string key, string value)
     {
+        if (key is null or "") return;
         AddTerm(CreateTerm(key, value));
     }
 
@@ -43,9 +45,14 @@ public class LangAPI
     public void AddItemLang(GkItem item)
     {
         var info = item.Info;
-        CreateAndAddTerm(info.itemNameKey, item.Name);
-        CreateAndAddTerm(info.itemLongDescKey, item.Description);
-        CreateAndAddTerm(info.itemStatsKey, item.StatsDescription);
+        CreateAndAddTerm(info.itemNameKey.mTerm, item.Name);
+        CreateAndAddTerm(info.itemLongDescKey.mTerm, item.Description);
+        CreateAndAddTerm(info.itemStatsKey.mTerm, item.StatsDescription);
+    }
+
+    public void AddDifficultyLang(GkDifficulty difficulty)
+    {
+        CreateAndAddTerm("MENU.UI.DIFFICULTY." + difficulty.TranslationKey, $"{difficulty.DifficultyName}: <b>{difficulty.DifficultyValues.stringPercentage}</b>");
     }
 
     private void RegisterTerms()

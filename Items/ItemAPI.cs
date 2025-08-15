@@ -122,8 +122,7 @@ public class ItemAPI
         Plugin.Log.LogInfo($"All Items");
         foreach (var e in items)
         {
-            ItemID id = e.key;
-            Plugin.Log.LogInfo($"   Item {(int)id} {e.value.id} {e.value.itemType} {e.value.itemNameKey} {e.value.itemLongDescKey}");
+            Plugin.Log.LogInfo($"   Item {e.value.ItemId} {e.value.itemType} {e.value.itemNameKey.mTerm} {e.value.itemLongDescKey.mTerm}");
         }
         Plugin.Log.LogInfo($"Registered {_items.Count} Items");
     }

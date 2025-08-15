@@ -1,16 +1,18 @@
 <Project>
-		<ItemGroup>
-				<PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-				<PackageReference Include="UnityEngine.Modules" Version="2021.3.33"/>
-				<!-- <Reference Include="Gatekeeper">
-					<HintPath>libs/Gatekeeper.dll</HintPath>
-				</Reference> -->
-				<Reference Include="UnityEngine.AssetBundleModule">
-					<HintPath>libs/UnityEngine.AssetBundleModule.dll</HintPath>
-				</Reference>
-				<Reference Include="UnityEngine.CoreModule">
-					<HintPath>libs/UnityEngine.CoreModule.dll</HintPath>
-				</Reference>
-				<PackageReference Include="Gatekeeper.GameLibs.Steam" Version="1.0.0.5" />
-		</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BepInEx.Analyzers" Version="1.0.8" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+		<PackageReference Include="UnityEngine.Modules" Version="2021.3.33"/>
+		<!-- <Reference Include="Gatekeeper">
+			<HintPath>libs/Gatekeeper.dll</HintPath>
+		</Reference> -->
+		<Reference Include="UnityEngine.AssetBundleModule">
+			<HintPath>libs/UnityEngine.AssetBundleModule.dll</HintPath>
+		</Reference>
+		
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>libs/UnityEngine.CoreModule.dll</HintPath>
+		</Reference>
+		
+		<PackageReference Include="Gatekeeper.GameLibs.Steam" Version="1.0.0.5" />
+    </ItemGroup>
 </Project>

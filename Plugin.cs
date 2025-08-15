@@ -7,12 +7,11 @@ using HarmonyLib;
 
 namespace GKAPI;
 
-[BepInPlugin(PluginGuid, PluginName, PluginVersion)]
+[BepInPlugin(PluginGuid, PluginName, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BasePlugin
 {
     public const string PluginGuid = "com.robocraft999.gkapi";
     public const string PluginName = "GKAPI";
-    private const string PluginVersion = "0.1.0";
     
     internal new static ManualLogSource Log;
 

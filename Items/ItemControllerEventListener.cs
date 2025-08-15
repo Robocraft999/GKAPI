@@ -1,7 +1,9 @@
 ﻿using Gatekeeper.Char_Scripts.General;
+using Gatekeeper.Char_Scripts.General.CharData;
 using Gatekeeper.Enemy.Base;
 using Gatekeeper.General.Events.Characters;
 using Gatekeeper.General.Events.Enemies;
+using Gatekeeper.General.Events.Interactable;
 using Gatekeeper.General.Events.Items;
 using Gatekeeper.Utility;
 using HarmonyLib;
@@ -12,22 +14,22 @@ namespace GKAPI.Items;
 [HarmonyPatch]
 public class ItemControllerEventListener
 {
-    [HarmonyPatch(typeof(CharItemCaster), nameof(CharItemCaster.ClientHandleSkillUsed))]
+    [HarmonyPatch(typeof(CharItemCaster), nameof(CharItemCaster.OwnerHandleSkillUsed))]
     [HarmonyPostfix]
     private static void OnSkillUsed(EventClientCharacterSkillUsed eventData)
     {
         foreach (var controller in ItemAPI.Instance.GetItemControllers())
         {
-            controller.ClientHandleSkillUsed(eventData);
+            controller.OwnerHandleSkillUsed(eventData);
         }
     }
 
-    [HarmonyPatch(typeof(CharItemCaster), nameof(CharItemCaster.ClientHandleOnEnemyDied))]
+    [HarmonyPatch(typeof(CharItemCaster), nameof(CharItemCaster.OwnerHandleOnEnemyDied))]
     private static void OnEnemyDied(EventClientEnemyDied eventData)
     {
         foreach (var controller in ItemAPI.Instance.GetItemControllers())
         {
-            controller.ClientHandleEnemyDied(eventData);
+            controller.OwnerHandleOnEnemyDied(eventData);
         }
     }
     
@@ -59,7 +61,7 @@ public class ItemControllerEventListener
     }
     
     [HarmonyPatch(typeof(CharItemCaster), nameof(CharItemCaster.OwnerFirstSkillHit))]
-    private static void OnFirstSkillHit(EnemyCharacterMain enemy, EventOwnerCharacterHitSomething eventData)
+    private static void OnFirstSkillHit(IEnemy enemy, EventOwnerCharacterHitSomething eventData)
     {
         foreach (var controller in ItemAPI.Instance.GetItemControllers())
         {
@@ -68,7 +70,7 @@ public class ItemControllerEventListener
     }
     
     [HarmonyPatch(typeof(CharItemCaster), nameof(CharItemCaster.OwnerSkillHit))]
-    private static void OnSkillHit(EnemyCharacterMain enemy, EventOwnerCharacterHitSomething eventData)
+    private static void OnSkillHit(IEnemy enemy, EventOwnerCharacterHitSomething eventData)
     {
         foreach (var controller in ItemAPI.Instance.GetItemControllers())
         {
@@ -77,7 +79,7 @@ public class ItemControllerEventListener
     }
     
     [HarmonyPatch(typeof(CharItemCaster), nameof(CharItemCaster.OwnerItemHit))]
-    private static void OnItemHit(EnemyCharacterMain enemy, EventOwnerCharacterHitSomething eventData)
+    private static void OnItemHit(IEnemy enemy, EventOwnerCharacterHitSomething eventData)
     {
         foreach (var controller in ItemAPI.Instance.GetItemControllers())
         {
@@ -93,14 +95,15 @@ public class ItemControllerEventListener
         var itemApi = ItemAPI.Instance;
         var container = __instance.transform.GetChild(0);
 
-        var charManager = __instance.gameObject.GetComponent<CharManager>();
+        var charManager = __instance.gameObject.GetComponent<CharData>();
 
         foreach (var (itemID, controllerType) in itemApi.itemControllerTypes)
         {
             var go = new GameObject($"Controller - {itemApi.GetItemById(itemID).name}");
             var component = (CustomItemController)go.AddComponent(controllerType);
             component.ItemID = itemID;
-            component.manager = charManager;
+            component.charData = charManager;
+            //component.manager = charManager;
             
             go.transform.SetParent(container.transform);
             itemApi.itemControllers[itemID] = component;

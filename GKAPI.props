@@ -11,6 +11,6 @@
 				<Reference Include="UnityEngine.CoreModule">
 					<HintPath>libs/UnityEngine.CoreModule.dll</HintPath>
 				</Reference>
-				<PackageReference Include="Gatekeeper.GameLibs.Steam" Version="0.8.5.20" />
+				<PackageReference Include="Gatekeeper.GameLibs.Steam" Version="1.0.0.5" />
 		</ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ public class GkItem
     public string Name { get; private set; }
     public string StatsDescription { get; private set; }
     
-    public ItemID GetItemID => Info.ItemID;
+    public ItemID GetItemID => Info.ItemId;
     public ItemDatabaseInfo Info { get; private set; }
     private List<ItemID> triadItemIds = new();
 
@@ -148,10 +148,10 @@ public class GkItem
             Plugin.Log.LogInfo($"Building GkItem with id: {itemId}");
             var vanillaItems = DatabaseInfoProvider.Items.ItemInfos;
             var info = ScriptableObject.CreateInstance<ItemDatabaseInfo>();
-            info.ItemID = (ItemID)itemId;
+            info.ItemId = (ItemID)itemId;
             //TODO add custom meshrenderer
             info.ItemFbx = vanillaItems.get_Item(ItemID.Fuse).ItemFbx;
-            info.HideInDatabase = false;
+            info.hideInDatabase = false;
             //TODO add projectiles
             info.ProjectileInfos = new List<ItemProjectileInfo>();
 
@@ -165,14 +165,16 @@ public class GkItem
             }
             Plugin.Log.LogMessage($"Is sprite null? {sprite == null}");
             
-            info.itemIcon = sprite ?? vanillaItems.get_Item(ItemID.Cannonade).itemIcon;
-            info.id = id;
+            info.DatabaseIcon = sprite ?? vanillaItems.get_Item(ItemID.Cannonade).DatabaseIcon;
+            info.Id = id;
             info.itemType = itemType;
             info.itemMaxCount = maxCount;
             info.unlocked = unlocked;
             info.wasSeen = !hidden;
             info.modificationParams = modifications;
-            info.dropSource = dropSource;
+            info.defaultDropSource = dropSource;
+            //TODO add separate function
+            info.arenaDropSource = dropSource;
             info.currency = CurrencyType.Prism;
             info.itemCost = itemCost;
             info.itemObeliskCost = itemCost;
@@ -183,14 +185,18 @@ public class GkItem
             var scrapValue = itemType switch
             {
                 ItemType.Modifiers => 10,
-                ItemType.StructureChangers => 40,
+                ItemType.StructureChangers => 30,
+                ItemType.RunesOfCreation => 40,
                 ItemType.Amulets => 20,
+                ItemType.CursedSignatures => 5,
+                ItemType.Triad => 0,
                 _ => 0
             };
             info.itemSellingCost = scrapValue;
             info.itemCreateCost = scrapValue;
             //TODO custom cost
             info.itemUnlockCost = 1;
+            info.itemExcludeCost = 5;
             if (itemType == ItemType.Triad)
             {
                 info.itemUnlockCost = 0;

@@ -66,6 +66,7 @@ jobs:
           
           existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name_s}/${version}" | jq '.version_number?' | grep "${version}\"" || true)
           echo "ts: ${existing_version_number}"
+          echo "ts2: ${$(curl --compressed -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name_s}/${version}")}"
           if [ -z $existing_version_number ]
           then
             echo "ts will be pushed"

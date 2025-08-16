@@ -33,10 +33,6 @@
     <Folder Include="Utils\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="GKAPI.csproj.user" />
-  </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(IsDevEnv)'=='true' ">
     <Exec Command="xcopy /q /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Gatekeeper\BepInEx\plugins&quot; &gt; nul"/>
     <Exec Command="python ../../Tools/autoversion/versioner.py $(ProjectName)"/>

@@ -37,5 +37,15 @@ jobs:
       - name: Build and Publish
         run: |
           dotnet pack --configuration Release /p:PackageOutputPath=./ReleaseOutput /p:OutputPath=./ReleaseOutput
+          
           nuget setapikey "${{ secrets.NUGET_API_KEY }}"
           nuget push ./ReleaseOutput/*.nupkg -Source 'https://api.nuget.org/v3/index.json'
+          find . -name '*.nupkg' -type f -delete
+          
+          find . -name '*.pdb' -type f -delete
+          find . -name '*.deps.json' -type f -delete
+          
+          tcli publish --token ${{ secrets.TCLI_AUTH_TOKEN }}
+          rm -rf ./build
+          
+          rm -rf ./ReleaseOutput

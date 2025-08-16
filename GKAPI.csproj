@@ -6,7 +6,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>GKAPI</AssemblyName>
     <Product>Gatekeeper API</Product>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -33,7 +33,12 @@
     <Folder Include="Utils\" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /q /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Gatekeeper\BepInEx\plugins&quot; &gt; nul" IgnoreExitCode="true"/>
+  <ItemGroup>
+    <Content Include="GKAPI.csproj.user" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(IsDevEnv)'=='true' ">
+    <Exec Command="xcopy /q /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Gatekeeper\BepInEx\plugins&quot; &gt; nul"/>
+    <Exec Command="python ../../Tools/autoversion/versioner.py $(ProjectName)"/>
   </Target>
 </Project>

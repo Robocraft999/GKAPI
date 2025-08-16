@@ -1,0 +1,27 @@
+﻿[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "Robocraft999"
+name = "GKAPI"
+versionNumber = "0.1.2"
+description = "API for modding Gatekeeper"
+websiteUrl = "https://github.com/Robocraft999/GKAPI"
+containsNsfwContent = false
+
+[package.dependencies]
+BepInEx-BepInExPack_IL2CPP = "6.0.733"
+
+[build]
+icon = "../icon.png"
+readme = "./README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "./ReleaseOutput"
+target = "./plugins/GKAPI"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["gatekeeper"]
+categories = ["libraries"]

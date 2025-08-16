@@ -33,19 +33,47 @@ jobs:
           echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
           sudo apt-get update
           sudo apt-get install -y mono-complete
+          
+      - name: Setup Python
+        uses: actions/setup-python@v5
+          
+      - name: Setup Tools
+        uses: actions/checkout@v4
+        with:
+          repository: GatekeeperModding/Tools
+          path: tools
 
       - name: Build and Publish
         run: |
-          dotnet pack --configuration Release /p:PackageOutputPath=./ReleaseOutput /p:OutputPath=./ReleaseOutput
+          IFS='|' read -ra parts <<< "$(python tools/meta-provider/meta.py)"
+          version=${parts[0]}
+          nuget_package_name=${parts[1]}
+          package_name_s=${parts[2]}
+          namespace=${parts[3]}
           
-          nuget setapikey "${{ secrets.NUGET_API_KEY }}"
-          nuget push ./ReleaseOutput/*.nupkg -Source 'https://api.nuget.org/v3/index.json'
-          find . -name '*.nupkg' -type f -delete
+          existing_version_number=$(curl --compressed -s "https://api-v2v3search-0.nuget.org/query?q=packageid:${nuget_package_name}&prerelease=true&semVerLevel=2.0.0" | jq '.data[0]?.versions[]?.version' | grep "${version}\"" || true)
+          if [ -z $existing_version_number ]
+          then
+            echo "Nuget Version already exists"
+          fi
+               
+          existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/v1/package/" | jq --arg package_name "$namespace-$package_name_s" '.[]? | select(.full_name|startswith($package_name)) | .versions[0]?.version_number' | grep "${version}\"" || true)
+          if [ -z $existing_version_number ]
+          then
+            echo "ts Version already exists"   
+          fi
+          echo "end"
           
-          find . -name '*.pdb' -type f -delete
-          find . -name '*.deps.json' -type f -delete
+        #  dotnet pack --configuration Release /p:PackageOutputPath=./ReleaseOutput /p:OutputPath=./ReleaseOutput
           
-          tcli publish --token ${{ secrets.TCLI_AUTH_TOKEN }}
-          rm -rf ./build
+        #  nuget setapikey "${{ secrets.NUGET_API_KEY }}"
+        #  nuget push ./ReleaseOutput/*.nupkg -Source 'https://api.nuget.org/v3/index.json'
+        #  find . -name '*.nupkg' -type f -delete
           
-          rm -rf ./ReleaseOutput
+        #  find . -name '*.pdb' -type f -delete
+        #  find . -name '*.deps.json' -type f -delete
+          
+        #  tcli publish --token ${{ secrets.TCLI_AUTH_TOKEN }}
+        #  rm -rf ./build
+          
+        #  rm -rf ./ReleaseOutput

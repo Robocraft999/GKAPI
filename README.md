@@ -1,4 +1,4 @@
-﻿# GKAPI
+# GKAPI
 
 A modding API for [Gatekeeper](https://store.steampowered.com/app/2106670/Gatekeeper/) (Unity Game by Gravity Lagoon) <br>
 The modding framework used is BepInEx, which is required to use this mod and its addons. You can find information

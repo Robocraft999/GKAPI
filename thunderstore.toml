@@ -13,7 +13,7 @@ containsNsfwContent = false
 BepInEx-BepInExPack_IL2CPP = "6.0.733"
 
 [build]
-icon = "../icon.png"
+icon = "./icon.png"
 readme = "./README.md"
 outdir = "./build"
 

@@ -47,20 +47,28 @@ jobs:
         run: |
           IFS='|' read -ra parts <<< "$(python tools/meta-provider/meta.py)"
           version=${parts[0]}
+          echo "version=${version}"
           nuget_package_name=${parts[1]}
+          echo "nuget_package_name=${nuget_package_name}"
           package_name_s=${parts[2]}
+          echo "package_name_s=${package_name_s}"
           namespace=${parts[3]}
+          echo "namespace=${namespace}"
           
           existing_version_number=$(curl --compressed -s "https://api-v2v3search-0.nuget.org/query?q=packageid:${nuget_package_name}&prerelease=true&semVerLevel=2.0.0" | jq '.data[0]?.versions[]?.version' | grep "${version}\"" || true)
           if [ -z $existing_version_number ]
           then
-            echo "Nuget Version already exists"
+            echo "Nuget will be pushed"
+          else
+            echo "Nuget already exists"
           fi
                
           existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/v1/package/" | jq --arg package_name "$namespace-$package_name_s" '.[]? | select(.full_name|startswith($package_name)) | .versions[0]?.version_number' | grep "${version}\"" || true)
           if [ -z $existing_version_number ]
           then
-            echo "ts Version already exists"   
+            echo "ts will be pushed"
+          else
+            echo "ts already exists"
           fi
           echo "end"
           

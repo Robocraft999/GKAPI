@@ -63,7 +63,7 @@ jobs:
             echo "Nuget already exists"
           fi
           
-          $(curl -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name_s}/${version}" | grep "Not found." || true)
+          existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name_s}/${version}" | grep "Not found." || false)
           if [ -z $existing_version_number ]
           then
             echo "ts will be pushed"

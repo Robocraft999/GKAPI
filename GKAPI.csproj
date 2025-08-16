@@ -6,7 +6,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>GKAPI</AssemblyName>
     <Product>Gatekeeper API</Product>
-    <Version>0.1.4</Version>
+    <Version>0.1.5</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>

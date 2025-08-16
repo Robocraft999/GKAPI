@@ -2,9 +2,9 @@
 schemaVersion = "0.0.1"
 
 [package]
-namespace = "Robocraft999"
+namespace = "GatekeeperModding"
 name = "GKAPI"
-versionNumber = "0.1.4"
+versionNumber = "0.1.5"
 description = "API for modding Gatekeeper"
 websiteUrl = "https://github.com/Robocraft999/GKAPI"
 containsNsfwContent = false

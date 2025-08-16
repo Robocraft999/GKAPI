@@ -45,8 +45,6 @@ jobs:
 
       - name: Build and Publish
         run: |
-          ls .
-          ls tools
           IFS='|' read -ra parts <<< "$(python tools/meta-provider/meta.py)"
           version=${parts[0]}
           nuget_package_name=${parts[1]}

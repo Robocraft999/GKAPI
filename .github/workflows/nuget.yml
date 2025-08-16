@@ -56,6 +56,7 @@ jobs:
           echo "namespace=${namespace}"
           
           existing_version_number=$(curl --compressed -s "https://api-v2v3search-0.nuget.org/query?q=packageid:${nuget_package_name}&prerelease=true&semVerLevel=2.0.0" | jq '.data[0]?.versions[]?.version' | grep "${version}\"" || true)
+          echo "nuget: ${existing_version_number}"
           if [ -z $existing_version_number ]
           then
             echo "Nuget will be pushed"
@@ -63,7 +64,8 @@ jobs:
             echo "Nuget already exists"
           fi
           
-          existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name_s}/${version}" | jq .version_number? | grep "${version}\"" || true)
+          existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name_s}/${version}" | jq '.version_number?' | grep "${version}\"" || true)
+          echo "ts: ${existing_version_number}"
           if [ -z $existing_version_number ]
           then
             echo "ts will be pushed"

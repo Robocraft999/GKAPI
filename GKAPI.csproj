@@ -6,9 +6,10 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>GKAPI</AssemblyName>
     <Product>Gatekeeper API</Product>
-    <Version>0.1.6</Version>
+    <Version>0.1.7</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
       https://nuget.bepinex.dev/v3/index.json;
@@ -27,6 +28,7 @@
     <EmbeddedResource Include="Assets\testassetbundle">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <None Include="./README.md" Pack="true" PackagePath="/"/>
   </ItemGroup>
 
   <ItemGroup>

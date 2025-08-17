@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "GatekeeperModding"
 name = "GKAPI"
-versionNumber = "0.1.6"
+versionNumber = "0.1.7"
 description = "API for modding Gatekeeper"
 websiteUrl = "https://github.com/Robocraft999/GKAPI"
 containsNsfwContent = false
@@ -14,7 +14,7 @@ BepInEx-BepInExPack_IL2CPP = "6.0.733"
 
 [build]
 icon = "./icon.png"
-readme = "./README.md"
+readme = "./README_Thunderstore.md"
 outdir = "./build"
 
 [[build.copy]]

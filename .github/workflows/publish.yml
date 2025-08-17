@@ -1,4 +1,4 @@
-name: Nuget Upload
+name: Nuget and Thunderstore Publish
 
 on:
   release: 

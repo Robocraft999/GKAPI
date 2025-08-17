@@ -54,12 +54,21 @@ jobs:
           echo "package_name_s=${package_name_s}"
           namespace=${parts[3]}
           echo "namespace=${namespace}"
+
+          is_project_built=false
           
           existing_version_number=$(curl --compressed -s "https://api-v2v3search-0.nuget.org/query?q=packageid:${nuget_package_name}&prerelease=true&semVerLevel=2.0.0" | jq '.data[0]?.versions[]?.version' | grep "${version}\"" || true)
           echo "nuget: ${existing_version_number}"
           if [ -z $existing_version_number ]
           then
+            dotnet pack --configuration Release /p:PackageOutputPath=./ReleaseOutput /p:OutputPath=./ReleaseOutput
+            is_project_built=true
+
             echo "Nuget will be pushed"
+
+            nuget setapikey "${{ secrets.NUGET_API_KEY }}"
+            # nuget push ./ReleaseOutput/*.nupkg -Source 'https://api.nuget.org/v3/index.json'
+            # find . -name '*.nupkg' -type f -delete
           else
             echo "Nuget already exists"
           fi
@@ -69,21 +78,23 @@ jobs:
           if [ -z $existing_version_number ]
           then
             echo "ts will be pushed"
+
+            if [ "$is_project_built" = false ] ; then
+              dotnet pack --configuration Release /p:PackageOutputPath=./ReleaseOutput /p:OutputPath=./ReleaseOutput
+              is_project_built=true
+            fi
+
+            find . -name '*.pdb' -type f -delete
+            find . -name '*.deps.json' -type f -delete
+          
+            # tcli publish --token ${{ secrets.TCLI_AUTH_TOKEN }}
+            # rm -rf ./build
           else
             echo "ts already exists"
           fi
+
+          if [ "$is_project_built" = true ] ; then
+            rm -rf ./ReleaseOutput
+          fi
+
           echo "end"
-          
-        #  dotnet pack --configuration Release /p:PackageOutputPath=./ReleaseOutput /p:OutputPath=./ReleaseOutput
-          
-        #  nuget setapikey "${{ secrets.NUGET_API_KEY }}"
-        #  nuget push ./ReleaseOutput/*.nupkg -Source 'https://api.nuget.org/v3/index.json'
-        #  find . -name '*.nupkg' -type f -delete
-          
-        #  find . -name '*.pdb' -type f -delete
-        #  find . -name '*.deps.json' -type f -delete
-          
-        #  tcli publish --token ${{ secrets.TCLI_AUTH_TOKEN }}
-        #  rm -rf ./build
-          
-        #  rm -rf ./ReleaseOutput

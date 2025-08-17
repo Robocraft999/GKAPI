@@ -50,8 +50,8 @@ jobs:
           echo "version=${version}"
           nuget_package_name=${parts[1]}
           echo "nuget_package_name=${nuget_package_name}"
-          package_name_s=${parts[2]}
-          echo "package_name_s=${package_name_s}"
+          package_name=${parts[2]}
+          echo "package_name=${package_name}"
           namespace=${parts[3]}
           echo "namespace=${namespace}"
 
@@ -72,7 +72,7 @@ jobs:
             echo "Nuget already exists"
           fi
           
-          existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name_s}/${version}/" | jq '.version_number?' | grep "${version}\"" || true)
+          existing_version_number=$(curl --compressed -s "https://thunderstore.io/api/experimental/package/${namespace}/${package_name}/${version}/" | jq '.version_number?' | grep "${version}\"" || true)
           if [ -z $existing_version_number ]
           then
             echo "ts will be pushed"

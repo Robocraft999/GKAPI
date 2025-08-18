@@ -7,12 +7,10 @@ about to install BepInEx [here](https://docs.bepinex.dev/master/articles/user_gu
 ## Current State
 
 This Project...
-- is currently not published on [Nuget](https://www.nuget.org/) so dependencies need the dll. 
-  The dll has to be [built from source](#build-from-source) <br>
+- is currently published on [Nuget](https://www.nuget.org/packages/GKAPI/). 
+  The dll can be [built from source](#build-from-source) though<br>
 - uses the stripped [GameLibs](https://www.nuget.org/packages/Gatekeeper.GameLibs.Steam) from nuget
-
-If you still want to try out what is currently possible, [clone the repository](#build-from-source) and
-edit the Plugin.cs to your needs. In the Content folder is a simple ItemController which does nothing.
+- is still in development
 
 ## Use the API
 ### Build from source

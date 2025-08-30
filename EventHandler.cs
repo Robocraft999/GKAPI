@@ -240,11 +240,11 @@ public class EventHandler
         //Plugin.Log.LogInfo($"   '{DatabaseInfoProvider.Items.ItemRelatedDatas.get_Item(itemInfo.ItemID).TriadInfo.id}'");
         //Plugin.Log.LogInfo($"Triad Panel Setup {__instance} {itemInfo.id} {itemLocalizer}");
     }*/
+}
 
-    public enum LoadingState
-    {
-        PreInit,
-        Init,
-        LateInit,
-    }
+public enum LoadingState
+{
+    PreInit,
+    Init,
+    LateInit,
 }

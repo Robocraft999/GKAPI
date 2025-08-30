@@ -1,10 +1,8 @@
-﻿using System.Reflection;
-using Cpp2IL.Core.Extensions;
-using Gatekeeper.General.Currency;
+﻿using Gatekeeper.General.Currency;
 using Gatekeeper.Infrastructure.Providers.InfoProviders;
 using Gatekeeper.Items;
 using Gatekeeper.MainMenuScripts.Database.ItemsDatabaseController;
-using Il2CppInterop.Runtime;
+using GKAPI.AssetBundles;
 using Il2CppSystem.Collections.Generic;
 using UnityEngine;
 using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
@@ -82,6 +80,8 @@ public class GkItem
         private ItemDropSource _dropSource = ItemDropSource.All;
         private List<ParamModification> _modifications = new();
         private List<ItemID> _triadItems = new();
+        private Sprite _icon = null;
+        private GameObject _fbx = null;
 
         private static string FormatTerm(ItemType itemType, string id, string suffix)
         {
@@ -164,6 +164,18 @@ public class GkItem
             return this;
         }
 
+        public Builder WithIcon(Sprite icon)
+        {
+            _icon =  icon;
+            return this;
+        }
+
+        public Builder WithModel(GameObject fbxPrefab)
+        {
+            _fbx = fbxPrefab;
+            return this;
+        }
+
         public Builder WithItemCost(int cost)
         {
             _itemCost = cost;
@@ -212,24 +224,30 @@ public class GkItem
             var vanillaItems = DatabaseInfoProvider.Items.ItemInfos;
             var info = ScriptableObject.CreateInstance<ItemDatabaseInfo>();
             info.ItemId = (ItemID)itemId;
-            //TODO add custom meshrenderer
-            info.ItemFbx = vanillaItems.get_Item(ItemID.Fuse).ItemFbx;
+
+            MeshRenderer fbx = null;
+            var vanillaMeshRendererMaterials = vanillaItems.get_Item(ItemID.Fuse).ItemFbx.materials;
+            if (_fbx != null)
+            {
+                fbx = _fbx.GetComponent<MeshRenderer>();
+            }
+            else
+            {
+                var placeholderFbx = AssetHelper.LoadAsset<GameObject>(AssetHelper.PlaceholderBundlePath, AssetHelper.PlaceholderPrefabPath);
+                if (placeholderFbx != null)
+                    fbx = placeholderFbx.GetComponent<MeshRenderer>();
+            }
+            if (fbx != null)
+                fbx.materials = vanillaMeshRendererMaterials;
+            info.ItemFbx = fbx ?? vanillaItems.get_Item(ItemID.Fuse).ItemFbx;
+            
+            var itemIcon = _icon ?? AssetHelper.LoadAsset<Sprite>(AssetHelper.PlaceholderBundlePath, AssetHelper.PlaceholderSpritePath);
+            info.DatabaseIcon = itemIcon ?? vanillaItems.get_Item(ItemID.Cannonade).DatabaseIcon;
+            
             info.hideInDatabase = false;
             //TODO add projectiles
             info.ProjectileInfos = new List<ItemProjectileInfo>();
-
-            //TODO custom icon
-            Sprite sprite;
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GKAPI.Assets.testassetbundle"))
-            {
-                var testBundle = AssetBundle.LoadFromMemory(stream!.ReadBytes());
-                var asset = testBundle.LoadAsset("assets/testbundle/textures/logo-50x50.png", Il2CppType.Of<Sprite>());
-                sprite = asset.TryCast<Sprite>();
-                testBundle.Unload(false);
-            }
-            Plugin.Log.LogMessage($"Is sprite null? {sprite == null}");
             
-            info.DatabaseIcon = sprite ?? vanillaItems.get_Item(ItemID.Cannonade).DatabaseIcon;
             info.Id = _id;
             info.itemType = _itemType;
             info.itemMaxCount = _maxCount;
